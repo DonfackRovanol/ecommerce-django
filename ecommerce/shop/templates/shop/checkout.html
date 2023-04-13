@@ -1,0 +1,90 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="list-group" id="item-list">
+                <h3 class="text-center">Voici Votre Liste</h3>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form action="/checkout/" method="POST">
+              {% csrf_token %}
+                <input type="hidden" id="items" name="items">
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="inputnom4">Nom</label>
+                    <input type="text" name="nom" id="nom" class="form-control" placeholder="donfack" aria-describedby="helpId">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="inputemail4">Email</label>
+                    <input type="email" name="email" id="email" class="form-control" placeholder="rovanoldonfack7@gmail.com" aria-describedby="helpId">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="addresse">Addresse</label>
+                    <input type="text" name="address" id="address" class="form-control" placeholder="PK 12" aria-describedby="helpId">
+                  </div>
+                  <div class="form-group col-md-6">
+                    <label for="ville">Ville</label>
+                    <input type="text" name="ville" id="ville" class="form-control" placeholder="Douala" aria-describedby="helpId">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="pays">Pays</label>
+                    <select id="pays" name="pays" class="form-control">
+                        <option selected>cameroun</option>
+                        <option>Cote d'Ivoir</option>
+                        <option>Tchad</option>
+                        <option>France</option>
+                        <option>Burkina</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-2">
+                    <label for="inputville4">Zip</label>
+                    <input type="text" name="zipcode" id="zipcode" class="form-control" placeholder="" aria-describedby="helpId">
+                  </div>
+                </div>
+                <div class="form-group col-md-2">
+                  <label for="inputville4">Somme total a payer</label>
+                  <input type="readonly" name="total" id="total" class="bg-dark text-warning form-control" placeholder="" aria-describedby="helpId">
+                </div>
+                <button type="submit" class="btn btn-primary">Commander</button>
+            </form>
+        </div>
+    </div>
+{% endblock  %}
+{% block js %}
+    <script>
+        if(localStorage.getItem('panier') == null){
+            var panier = {};
+        }else{
+            panier = JSON.parse(localStorage.getItem('panier'));
+        }
+        var total = 0;
+        var nombre = 0;
+        for (item in panier) {
+            let nom = panier[item][1];
+            let quantite = panier[item][0];
+            let prix = panier[item][2];
+            nombre += quantite;
+            total += prix;
+            let itemString = ` <li class="list-group-item d-flex justify-content-between align-items-center">
+                ${nom}
+                <span class="badge badge-primary badge-pill">QTE: ${quantite}</span>
+                <span class="badge badge-warning badge-pill">FCFA ${prix}</span>
+            </li>` 
+            $('#item-list').append(itemString);
+        }
+
+        let itemNombre = ` <li class="list-group-item d-flex justify-content-between align-items-center">
+                <b class= "bg-danger">PRIX ET QUANTITE TOTALE</b>
+                <span class="badge badge-danger badge-pill">TQTE: ${nombre}</span>
+                <span class="badge badge-danger badge-pill">FCFA ${total}</span>
+            </li>` 
+            $('#item-list').append(itemNombre);
+            $('#total').val( "FCFA"+ total);
+
+        $('#items').val(JSON.stringify(panier));
+    </script>
+{% endblock %}
